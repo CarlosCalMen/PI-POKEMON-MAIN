@@ -1,6 +1,13 @@
-const getTypesHandler = (req,res)=>{
-    res.status(200).send('Traigo todos los types de Api inicialmente, guardo en BBDD y en el futuro traigo todos los types de la bbdd');
+const getAllTypes = require('../controllers/typesControllers.js');
+
+
+const getTypesHandler = async(req,res)=>{
+    try {
+        res.status(200).json(await getAllTypes());
+    } catch (error) {
+        res.status(400).json({error:error.message});
+    }
 };
 
 
-module.exports = {getTypesHandler};
+module.exports = getTypesHandler;
