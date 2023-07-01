@@ -1,0 +1,6 @@
+.mainContainer{
+    border-radius: 15px;
+    border: solid 1px black;
+    display: flex;
+    flex-wrap: wrap;
+}

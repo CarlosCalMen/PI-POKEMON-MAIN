@@ -9,6 +9,21 @@ const getCountPokemons = async()=>{
     return(data.count);
 };
 
+const returnPokemonInfo = (pokemonObject) => {
+    return ({
+        id: pokemonObject.id,
+        name: pokemonObject.name,
+        image: pokemonObject.sprites.other['official-artwork'].front_default,
+        life: pokemonObject.stats[0].base_stat,
+        attack: pokemonObject.stats[1].base_stat,
+        defense: pokemonObject.stats[2].base_stat,
+        speed: pokemonObject.stats[5].base_stat,
+        height: pokemonObject.height,
+        weight: pokemonObject.weight,
+        types:pokemonObject.types.map(element=>element.type.name)        
+    });
+};
+    
 const getApiPokemonsByName = async(name)=>{
     const limit = await getCountPokemons();
     let pokemonsApi = [];
@@ -21,18 +36,6 @@ const getApiPokemonsByName = async(name)=>{
         pokemonsApi.map(async (pokemon) => {
             const pokemonData = (await axios(pokemon.url)).data;
             return (returnPokemonInfo(pokemonData));
-            // {
-            //     id: pokemonData.id,
-            //     name: pokemonData.name,
-            //     image: pokemonData.sprites.other.dream_world.front_default,
-            //     life: pokemonData.stats[0].base_stat,
-            //     attack: pokemonData.stats[1].base_stat,
-            //     defense: pokemonData.stats[2].base_stat,
-            //     speed: pokemonData.stats[5].base_stat,
-            //     height: pokemonData.height,
-            //     weight: pokemonData.weight,
-            //     types:pokemonData.types.map(element=>element.type.name)
-            // };
         })    
     );
 };
@@ -73,18 +76,6 @@ const getAllApiPokemons = async ()=> {
         pokemonList.map(async (pokemon) => {
             const pokemonDetail = (await axios(pokemon.url)).data;
             return returnPokemonInfo(pokemonDetail);
-            // {
-            //     id: pokemonDetail.id,
-            //     name: pokemonDetail.name,
-            //     image: pokemonDetail.sprites.other.dream_world.front_default,
-            //     life: pokemonDetail.stats[0].base_stat,
-            //     attack: pokemonDetail.stats[1].base_stat,
-            //     defense: pokemonDetail.stats[2].base_stat,
-            //     speed: pokemonDetail.stats[5].base_stat,
-            //     height: pokemonDetail.height,
-            //     weight: pokemonDetail.weight,
-            //     types:pokemonDetail.types.map(element=>element.type.name)
-            // };
         })
     );
 };
@@ -111,21 +102,6 @@ const getAllPokemons = async()=>{
     return [...bbddPokemons,...apiPokemons];
 };
 
-const returnPokemonInfo = (pokemonObject) => {
-    return ({
-        id: pokemonObject.id,
-        name: pokemonObject.name,
-        image: pokemonObject.sprites.other.dream_world.front_default,
-        life: pokemonObject.stats[0].base_stat,
-        attack: pokemonObject.stats[1].base_stat,
-        defense: pokemonObject.stats[2].base_stat,
-        speed: pokemonObject.stats[5].base_stat,
-        height: pokemonObject.height,
-        weight: pokemonObject.weight,
-        types:pokemonObject.types.map(element=>element.type.name)        
-    });
-};
-    
 const getPokemonById = async(id)=>{
     //ver el tipo de id para buscar en la Api o en la BBDD
     if (!isNaN(id)){
@@ -164,7 +140,12 @@ const createPokemon = async({name,image,life,attack,defense,speed,height,weight,
 };
 
 module.exports = {
+    getCountPokemons,
+    getApiPokemonsByName,
+    getBBDDpokemonsByName,
     getPokemonsByName,
+    getAllApiPokemons,
+    getAllBBDDPokemons,
     getAllPokemons,
     getPokemonById,
     createPokemon
