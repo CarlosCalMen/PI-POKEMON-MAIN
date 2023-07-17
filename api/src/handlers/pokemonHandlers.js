@@ -27,12 +27,14 @@ const getPokemonByIdHandler = async(req,res)=>{
     }
 }
 
-const createPokemonHandler = async(req,res)=>{
+const createPokemonHandler = async (req, res) => {
     try {
-        const newPokemon = req.body;
-        res.status(200).json(await createPokemon(newPokemon));
-    } catch (error) {
-        res.status(400).json({error:error.message});
+      const newPokemon = req.body;
+      res.status(200).json(await createPokemon(newPokemon));
+    } 
+    catch (error) {
+      res.status(400).json({ error: error.message });
     }
-}
+  };
+
 module.exports = {getPokemonHandler,getPokemonByIdHandler,createPokemonHandler}

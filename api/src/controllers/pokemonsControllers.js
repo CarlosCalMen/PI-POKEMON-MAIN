@@ -20,7 +20,8 @@ const returnPokemonInfo = (pokemonObject) => {
         speed: pokemonObject.stats[5].base_stat,
         height: pokemonObject.height,
         weight: pokemonObject.weight,
-        types:pokemonObject.types.map(element=>element.type.name)        
+        created:false,        
+        types:pokemonObject.types.map(element=>element.type.name),
     });
 };
     
@@ -54,10 +55,12 @@ const getBBDDpokemonsByName = async(name) => {
             },
         }
     });
-    return pokemonsDataBase.map((pokemon) => ({
-        ...pokemon.toJSON(),
-        Types: pokemon.Types.map((type) => type.name),
-      }));
+    return pokemonsDataBase.map((pokemon) => {
+    //uniformizar formatos en types
+    const { Types, ...rest } = pokemon.toJSON();
+    const types = Types.map((type) => type.name);
+    return { ...rest, types };
+    });
 };
 
 const getPokemonsByName = async(name)=>{
@@ -69,8 +72,8 @@ const getPokemonsByName = async(name)=>{
 };
 
 const getAllApiPokemons = async ()=> {
-    //obtener el máximo número de pokemones
-    const limit = await getCountPokemons();
+    // obtener el máximo número de pokemones
+    const limit = 250;//await getCountPokemons();
     const pokemonList = (await axios(`${URL_BASE}?limit=${limit}`)).data.results;
     return await Promise.all (
         pokemonList.map(async (pokemon) => {
@@ -78,7 +81,25 @@ const getAllApiPokemons = async ()=> {
             return returnPokemonInfo(pokemonDetail);
         })
     );
-};
+//     let limit = 200//await getCountPokemons();
+//     let finalList=[];
+//     let i=0;
+//     const totalPokemons=1281;
+//     while (i<totalPokemons){
+//         let section=[];
+//         (i+limit>1281)?limit=1281-i:limit=200;
+//         let pokemonList = (await axios(`${URL_BASE}?offset=i&limit=${limit}`)).data.results;
+//         section= await Promise.all (
+//             pokemonList.map(async (pokemon) => {
+//                 const pokemonDetail = (await axios(pokemon.url)).data;
+//                 return returnPokemonInfo(pokemonDetail);
+//             })
+//         );
+//         finalList=[...finalList,...section];
+//         i+=limit;
+//     };
+//     return finalList;
+ };
 
 const getAllBBDDPokemons = async () => {
     const pokemonList = await Pokemon.findAll({
@@ -90,10 +111,13 @@ const getAllBBDDPokemons = async () => {
         },
       },
     });
-    return pokemonList.map((pokemon) => ({
-      ...pokemon.toJSON(),
-      Types: pokemon.Types.map((type) => type.name),
-    }));
+    return pokemonList.map((pokemon) => {
+        //uniformizar formatos en types
+        const { Types, ...rest } = pokemon.toJSON();
+        const types = Types.map((type) => type.name);
+        return { ...rest, types };
+    });
+
   };
   
 const getAllPokemons = async()=>{
@@ -124,19 +148,23 @@ const getPokemonById = async(id)=>{
 };
 
 const createPokemon = async({name,image,life,attack,defense,speed,height,weight,types})=>{
-    const [newPokemon,created] = await (Pokemon.findOrCreate({where:{
-                                                                name,
-                                                                image,
-                                                                life,
-                                                                attack,
-                                                                defense,
-                                                                speed,
-                                                                height,
-                                                                weight
-                                                            }}));
-    newPokemon.addType(types);                                                        
-    if (created) return newPokemon
-    else throw new Error ('no se pudo crear el Pokemon');                                                            
+    try {
+        const newPokemon = await Pokemon.create({
+                                                name,
+                                                image,
+                                                life,
+                                                attack,
+                                                defense,
+                                                speed,
+                                                height,
+                                                weight
+                                                });
+        await newPokemon.addType(types);
+        return newPokemon;
+    }
+    catch (error) {
+        throw new Error (error.message);
+    }
 };
 
 module.exports = {

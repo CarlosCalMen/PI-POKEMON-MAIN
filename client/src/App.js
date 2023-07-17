@@ -11,7 +11,7 @@ function App() {
       <Route exact path = '/' component = {Landing}/>
       <Route path = '/home' render ={()=><Home />} /> {/*pasar props aqui inmediatamente despues de Home*/}
       <Route path = '/form' component ={Form}/>
-      <Route path = '/detail' component ={Detail}/>
+      <Route path = '/detail/:id' component ={Detail}/>
     </div>
   );
 }
